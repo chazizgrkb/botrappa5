@@ -1,0 +1,16 @@
+{
+  "name": "botrappa_5",
+  "version": "0.1.0",
+  "description": "",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ChazizGRKB",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "@discordjs/rest": "^1.0.0",
+    "beautiful-logs.js": "^0.10.1",
+    "discord.js": "^14.0.3"
+  }
+}
