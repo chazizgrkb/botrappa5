@@ -5,32 +5,18 @@ const logger = require('beautiful-logs.js');
 const { token } = require('./config');
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-
-// Command path & collection
 client.commands = new Collection();
-const commandsPath = path.join(__dirname, 'commands');
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+client.commandArray = [];
 
-// Event path
-const eventsPath = path.join(__dirname, 'events');
-const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
+const commandFiles = fs.readdirSync(`./commands`).filter(file => file.endsWith('.js'));
+const eventFiles = fs.readdirSync(`./events`).filter(file => file.endsWith('.js'));
+const functionFiles = fs.readdirSync(`./functions`).filter(file => file.endsWith('.js'));
 
-// Functions path
-const functionsPath = path.join(__dirname, 'functions');
-const functionFiles = fs.readdirSync(functionsPath).filter(file => file.endsWith('.js'));
+// Initialization 
+logger.info(`FUNCTIONS -----------`)
+for (const file of functionFiles) { require(`./functions/${file}`)(client); logger.info(`Function ${file} registed!`); }
 
-(async () => {
-    logger.info(`FUNCTIONS -----------`)
-    for (const file of functionFiles) {
-        const filePath = path.join(functionsPath, file);
-        require(filePath)(client);
-        logger.info(`Function ${file} registed!`)
-    }
-    logger.info(`COMMANDS  -----------`)
-    client.handleCommands(commandFiles, commandsPath)
+client.handleCommands(commandFiles)
+client.handleEvents(eventFiles)
 
-    logger.info(`EVENTS    -----------`)
-    client.handleEvents(eventFiles, eventsPath)
-
-    client.login(token)
-})();
+client.login(token)
