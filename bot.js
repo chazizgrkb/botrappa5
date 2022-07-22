@@ -30,7 +30,7 @@ client.on('interactionCreate', async interaction => {
 
     try {
         await command.execute(interaction)
-        logger.command(`${interaction.user.tag} (${interaction.user.tag}) has used command ${interaction.commandName} in ${interaction.guild.name}`)
+        logger.command(`${interaction.user.tag} (${interaction.user.id}) has used command ${interaction.commandName} in ${interaction.guild.name}`)
     } catch (err) {
         logger.err(err)
         await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true})
