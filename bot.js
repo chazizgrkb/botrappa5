@@ -6,10 +6,16 @@ const { token } = require('./config')
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] })
 
+// Command path & collection
 client.commands = new Collection();
 const commandsPath = path.join(__dirname, 'commands')
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'))
 
+// Event path
+const eventsPath = path.join(__dirname, 'events');
+const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
+
+// Command Handler
 for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file)
     const command = require(filePath)
@@ -17,24 +23,15 @@ for (const file of commandFiles) {
     client.commands.set(command.data.name, command)
 }
 
-client.once('ready', () => {
-	logger.boot("Botrappa 5 is ready!")
-});
-
-client.on('interactionCreate', async interaction => {
-    if (!interaction.isChatInputCommand()) return;
-
-    const command = client.commands.get(interaction.commandName)
-
-    if (!command) return;
-
-    try {
-        await command.execute(interaction)
-        logger.command(`${interaction.user.tag} (${interaction.user.id}) has used command ${interaction.commandName} in ${interaction.guild.name}`)
-    } catch (err) {
-        logger.err(err)
-        await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true})
-    }
-})
+// Event Handler
+for (const file of eventFiles) {
+	const filePath = path.join(eventsPath, file);
+	const event = require(filePath);
+	if (event.once) {
+		client.once(event.name, (...args) => event.execute(...args));
+	} else {
+		client.on(event.name, (...args) => event.execute(...args));
+	}
+}
 
 client.login(token)
